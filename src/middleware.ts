@@ -4,7 +4,6 @@ import type { NextRequest } from "next/server"
 export function middleware(request: NextRequest) {
   // Check if we're handling an API request
     if (request.nextUrl.pathname.startsWith('/api/')) {
-      console.log(`Handling API request: ${request.nextUrl.pathname}`);
       
     const response = NextResponse.next()
     

@@ -13,10 +13,7 @@ export async function POST(req: NextRequest) {
         { error: "Email and password are required" },
         { status: 400 }
       )
-    }
-
-      console.log("Sign-in attempt with email:", email);
-      
+    } 
 
     // Find user
     const user = await prisma.user.findUnique({
