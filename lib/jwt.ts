@@ -10,6 +10,7 @@ interface AuthToken {
 export function verifyAuthToken(token: string): AuthToken | null {
   try {
     return jwt.verify(token, process.env.JWT_SECRET!) as AuthToken
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return null
   }
