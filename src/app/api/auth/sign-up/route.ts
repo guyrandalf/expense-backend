@@ -1,4 +1,4 @@
-import {prisma} from "../../../../lib/prisma"
+import { prisma } from "@/lib/prisma"
 import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 
@@ -40,7 +40,6 @@ export async function POST(req: NextRequest) {
     })
 
     // Remove password from response
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = newUser
 
     return NextResponse.json(userWithoutPassword, { status: 201 })

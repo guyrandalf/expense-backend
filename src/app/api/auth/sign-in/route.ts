@@ -1,7 +1,7 @@
-import {prisma} from "../../../../lib/prisma"
+import { prisma } from "@/lib/prisma"
 import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
-import { signJWT } from "../../../../lib/auth"
+import jwt from "jsonwebtoken"
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,20 +13,11 @@ export async function POST(req: NextRequest) {
         { error: "Email and password are required" },
         { status: 400 }
       )
-    } 
+    }
 
     // Find user
     const user = await prisma.user.findUnique({
       where: { email },
-      select: {
-        id: true,
-        email: true,
-        password: true,
-        firstName: true,
-        lastName: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     })
 
     if (!user || !user.password) {
@@ -47,13 +38,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate JWT token
-    const token = signJWT({
-      userId: user.id,
-      email: user.email,
-    })
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: "7d" }
+    )
 
     // Remove password from response
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user
 
     return NextResponse.json({

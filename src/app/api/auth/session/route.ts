@@ -1,12 +1,31 @@
-import {prisma} from "../../../../lib/prisma"
-import { withAuth } from "../../../../lib/auth"
-import { NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
+import { verifyAuthToken } from "@/lib/jwt"
+import { NextRequest, NextResponse } from "next/server"
 
-
-export const GET = withAuth(async (_req: Request, userId: string) => {
+export async function GET(req: NextRequest) {
   try {
+    // Get token from Authorization header
+    const authHeader = req.headers.get("Authorization")
+    if (!authHeader?.startsWith("Bearer ")) {
+      return NextResponse.json(
+        { error: "No token provided" },
+        { status: 401 }
+      )
+    }
+
+    const token = authHeader.split(" ")[1]
+    const decoded = verifyAuthToken(token)
+
+    if (!decoded?.userId) {
+      return NextResponse.json(
+        { error: "Invalid token" },
+        { status: 401 }
+      )
+    }
+
+    // Get user data
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: decoded.userId },
       select: {
         id: true,
         email: true,
@@ -32,4 +51,4 @@ export const GET = withAuth(async (_req: Request, userId: string) => {
       { status: 500 }
     )
   }
-})
+}
