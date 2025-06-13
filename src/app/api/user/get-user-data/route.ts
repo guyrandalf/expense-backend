@@ -23,12 +23,27 @@ export const GET = withAuth(async (_req: Request, userId: string) => {
         { status: 404 }
       )
     }
-      
+
     const income = await prisma.income.findMany({
         where: { userId: user?.id },
     })
 
-    return NextResponse.json(income)
+    const expenses = await prisma.expense.findMany({
+        where: { userId: user?.id },
+    })
+
+    return NextResponse.json({
+      income,
+      expenses,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      }
+    })
   } catch (error) {
     console.error("Error in get-session:", error)
     return NextResponse.json(
